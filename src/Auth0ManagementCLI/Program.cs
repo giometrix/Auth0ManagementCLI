@@ -105,10 +105,7 @@ public static class Program
 
         var response = await client.ExecuteAsync(request);
 
-        if (response.IsSuccessful)
-        {
-        }
-        else
+        if (!response.IsSuccessful)
         {
             throw new Exception($"Getting token failed:  {response.Content}");
         }
