@@ -9,3 +9,4 @@ Current Commands Supported
  * list-org-members
  * list-users
  * list-clients
+ * list-client-application-types

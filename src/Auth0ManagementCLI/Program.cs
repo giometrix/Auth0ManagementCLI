@@ -35,6 +35,12 @@ public static class Program
             var clients = await managementClient.Clients.GetAllAsync(new GetClientsRequest(), new PaginationInfo(page.Value, 100, true));
             PrintResponse(clients);
         });
+
+
+        app.AddCommand("list-client-application-types", () =>
+        {
+            PrintResponse(Enum.GetNames<ClientApplicationType>());
+        });
     }
 
     private static void AddUserCommands(CoconaApp app, ManagementApiClient managementClient)
