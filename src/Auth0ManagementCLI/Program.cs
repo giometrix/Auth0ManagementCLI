@@ -29,18 +29,20 @@ public static class Program
 
     private static void AddClientCommands(CoconaApp app, ManagementApiClient managementClient)
     {
-        app.AddCommand("list-clients", async () =>
+        app.AddCommand("list-clients", async ([Argument]int? page) =>
         {
-            var clients = await managementClient.Clients.GetAllAsync(new GetClientsRequest());
+            page ??= 0;
+            var clients = await managementClient.Clients.GetAllAsync(new GetClientsRequest(), new PaginationInfo(page.Value, 100, true));
             PrintResponse(clients);
         });
     }
 
     private static void AddUserCommands(CoconaApp app, ManagementApiClient managementClient)
     {
-        app.AddCommand("list-users", async () =>
+        app.AddCommand("list-users", async ([Argument] int? page) =>
         {
-            var users = await managementClient.Users.GetAllAsync(new GetUsersRequest());
+            page ??= 0;
+            var users = await managementClient.Users.GetAllAsync(new GetUsersRequest(), new PaginationInfo(page.Value, 100, true));
             PrintResponse(users);
         });
     }
@@ -58,9 +60,10 @@ public static class Program
             PrintResponse(organization);
         });
 
-        app.AddCommand("list-orgs", async () =>
+        app.AddCommand("list-orgs", async ([Argument] int? page) =>
         {
-            var organizations = await managementClient.Organizations.GetAllAsync(new PaginationInfo(0, 100, true));
+            page ??= 0;
+            var organizations = await managementClient.Organizations.GetAllAsync(new PaginationInfo(page.Value, 100, true));
             PrintResponse(organizations);
         });
 
@@ -85,9 +88,11 @@ public static class Program
 
         app.AddCommand("list-org-members",
             async
-                ([Argument] string orgId) =>
+                ([Argument] string orgId, [Argument] int? page) =>
                 {
-                    var members = await managementClient.Organizations.GetAllMembersAsync(orgId, new PaginationInfo(perPage: 100, includeTotals: true));
+                    page ??= 0;
+
+                    var members = await managementClient.Organizations.GetAllMembersAsync(orgId, new PaginationInfo(pageNo: page.Value, perPage: 100, includeTotals: true));
 
                     PrintResponse(members);
                 });
