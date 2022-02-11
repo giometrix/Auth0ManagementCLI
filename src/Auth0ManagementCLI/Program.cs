@@ -12,10 +12,10 @@ public static class Program
     public static async Task Main(params string[] args)
     {
         var config = GetConfig();
-        var auth0BaseUrl = config.GetSection("auth0").GetValue<string>("baseUrl");
-        var domain = config.GetSection("auth0").GetValue<string>("domain");
-        var clientId = config.GetSection("auth0").GetValue<string>("clientId");
-        var clientSecret = config.GetSection("auth0").GetValue<string>("clientSecret");
+        var auth0BaseUrl = GetAuth0ConfigValue(config, "baseUrl");
+        var domain = GetAuth0ConfigValue(config, "domain");
+        var clientId = GetAuth0ConfigValue(config, "clientId");
+        var clientSecret = GetAuth0ConfigValue(config, "clientSecret");
 
 
         var accessToken = await GetAccessToken(auth0BaseUrl, clientId, clientSecret);
@@ -124,6 +124,8 @@ public static class Program
             .Build();
         return config;
     }
+
+    private static string GetAuth0ConfigValue(IConfiguration config, string key) => config.GetSection("auth0").GetValue<string>(key);
 
     private static void PrintResponse(object response)
     {
