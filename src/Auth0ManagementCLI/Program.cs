@@ -23,7 +23,17 @@ public static class Program
         var app = CoconaApp.Create();
         AddOrgCommands(app, managementClient);
         AddUserCommands(app, managementClient);
+        AddClientCommands(app, managementClient);
         await app.RunAsync();
+    }
+
+    private static void AddClientCommands(CoconaApp app, ManagementApiClient managementClient)
+    {
+        app.AddCommand("list-clients", async () =>
+        {
+            var clients = await managementClient.Clients.GetAllAsync(new GetClientsRequest());
+            PrintResponse(clients);
+        });
     }
 
     private static void AddUserCommands(CoconaApp app, ManagementApiClient managementClient)
@@ -130,6 +140,6 @@ public static class Program
     private static void PrintResponse(object response)
     {
         Console.WriteLine("Response\n=====================\n");
-        Console.WriteLine(JsonConvert.SerializeObject(response));
+        Console.WriteLine(JsonConvert.SerializeObject(response, Formatting.Indented));
     }
 }

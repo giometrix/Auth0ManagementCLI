@@ -8,3 +8,4 @@ Current Commands Supported
  * invite-org-member
  * list-org-members
  * list-users
+ * list-clients
