@@ -59,7 +59,7 @@ public static class Program
                 ([Argument] string orgId, [Argument] string clientId, [Argument] string inviteeEmail, [Option("inviter")] string? inviter,
                     [Option("send-email")] bool sendEmail) =>
                 {
-                    inviter ??= "Spresso";
+                    inviter ??= "Welcome";
 
                     var request = new OrganizationCreateInvitationRequest
                     {
