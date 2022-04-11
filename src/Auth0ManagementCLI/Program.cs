@@ -29,6 +29,17 @@ public static class Program
 
     private static void AddClientCommands(CoconaApp app, ManagementApiClient managementClient)
     {
+        app.AddCommand("get-token", async () =>
+        {
+            var config = GetConfig();
+            var auth0BaseUrl = GetAuth0ConfigValue(config, "baseUrl");
+            var domain = GetAuth0ConfigValue(config, "domain");
+            var clientId = GetAuth0ConfigValue(config, "clientId");
+            var clientSecret = GetAuth0ConfigValue(config, "clientSecret");
+            var accessToken = await GetAccessToken(auth0BaseUrl, clientId, clientSecret);
+            PrintResponse(accessToken);
+        });
+
         app.AddCommand("list-clients", async ([Argument]int? page) =>
         {
             page ??= 0;
@@ -40,6 +51,55 @@ public static class Program
         app.AddCommand("list-client-application-types", () =>
         {
             PrintResponse(Enum.GetNames<ClientApplicationType>());
+        });
+
+        app.AddCommand("list-client-grants", async ([Argument] int? page) =>
+        {
+            page ??= 0;
+            var clientGrants = await managementClient.ClientGrants.GetAllAsync(new GetClientGrantsRequest(), new PaginationInfo(page.Value, 100, true));
+            PrintResponse(clientGrants);
+        });
+
+        app.AddCommand("create-client", async ([Argument(Description = "use 'list-client-application-types' for the list of valid values")] string applicationType,
+            [Argument] string? description,
+            [Argument(Description = "a comma delimited list of grant types")] string? allowedGrantTypesCommaDelimited,
+            [Argument(Description = "a comma delimited list of callbacks")] string? allowedCallbacksCommaDelimited,
+            [Argument(Description = "a comma delimited list of allowed origins")] string? allowedOriginsCommaDelimited,
+            [Argument(Description = "a comma delimited list of allowed origins")] string? allowedLogoutUrlsCommaDelimited) =>
+        {
+            var applicationTypeEnum = Enum.Parse<ClientApplicationType>(applicationType);
+            string[] allowedGrantTypes = null;
+            if (!String.IsNullOrEmpty(allowedGrantTypesCommaDelimited))
+            {
+                allowedGrantTypes = allowedGrantTypesCommaDelimited.Split(',');
+            }
+            string[] allowedCallbacks = null;
+            if (!String.IsNullOrEmpty(allowedCallbacksCommaDelimited))
+            {
+                allowedCallbacks = allowedCallbacksCommaDelimited.Split(',');
+            }
+            string[] allowedOrigins = null;
+            if (!String.IsNullOrEmpty(allowedOriginsCommaDelimited))
+            {
+                allowedOrigins = allowedOriginsCommaDelimited.Split(',');
+            }
+            string[] allowedLogoutUrls = null;
+            if (!String.IsNullOrEmpty(allowedLogoutUrlsCommaDelimited))
+            {
+                allowedLogoutUrls = allowedLogoutUrlsCommaDelimited.Split(',');
+            }
+
+            var request = new ClientCreateRequest
+            {
+                ApplicationType = applicationTypeEnum,
+                AllowedOrigins = allowedOrigins,
+                AllowedLogoutUrls = allowedLogoutUrls,
+                Description = description,
+                Callbacks = allowedCallbacks,
+                GrantTypes = allowedGrantTypes,
+                //todo
+            };
+
         });
     }
 
