@@ -16,8 +16,8 @@ public static class Program
     public static async Task Main(params string[] args)
     {
         var config = GetConfig();
-        var auth0BaseUrl = GetAuth0ConfigValue(config, "baseUrl");
         var domain = GetAuth0ConfigValue(config, "domain");
+        var auth0BaseUrl = new UriBuilder("https", domain).Uri.ToString();
         var clientId = GetAuth0ConfigValue(config, "clientId");
         var clientSecret = GetAuth0ConfigValue(config, "clientSecret");
 
@@ -332,8 +332,8 @@ public static class Program
         app.AddCommand("get-token", async () =>
         {
             var config = GetConfig();
-            var auth0BaseUrl = GetAuth0ConfigValue(config, "baseUrl");
             var domain = GetAuth0ConfigValue(config, "domain");
+            var auth0BaseUrl = new UriBuilder("https", domain).Uri.ToString();
             var clientId = GetAuth0ConfigValue(config, "clientId");
             var clientSecret = GetAuth0ConfigValue(config, "clientSecret");
             var accessToken = await GetAccessToken(auth0BaseUrl, clientId, clientSecret);
