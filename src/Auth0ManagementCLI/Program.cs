@@ -142,6 +142,7 @@ public static class Program
 
     private static async Task <int>ExportFlows(ManagementApiClient managementSourceClient, ManagementApiClient managementTargetClient)
     {
+        Console.WriteLine(Cyan("Exporting flows...."));
         var page = 0;
         var count = 0;
 
@@ -182,6 +183,7 @@ public static class Program
 
     private static async Task<int> ExportActions(ManagementApiClient managementSourceClient, ManagementApiClient managementTargetClient)
     {
+        Console.WriteLine(Cyan("Exporting actions...."));
         var page = 0;
         var count = 0;
         while (true)
@@ -203,6 +205,7 @@ public static class Program
 
     private static async Task<int> ExportRules(ManagementApiClient managementSourceClient, ManagementApiClient managementTargetClient)
     {
+        Console.WriteLine(Cyan("Exporting rules...."));
         var page = 0;
         var count = 0;
         while (true)
@@ -223,6 +226,7 @@ public static class Program
 
     private static async Task<int> ExportRoles(ManagementApiClient managementSourceClient, ManagementApiClient managementTargetClient)
     {
+        Console.WriteLine(Cyan("Exporting roles...."));
         var page = 0;
         var count = 0;
         while (true)
@@ -255,6 +259,7 @@ public static class Program
 
     private static async Task<int> ExportAPIs(ManagementApiClient managementSourceClient, ManagementApiClient managementTargetClient)
     {
+        Console.WriteLine(Cyan("Exporting APIs...."));
         var page = 0;
         var count = 0;
         while (true)
@@ -283,6 +288,7 @@ public static class Program
 
     private static async Task<int> ExportClients(ManagementApiClient managementSourceClient, ManagementApiClient managementTargetClient, Dictionary<string, string> orgIdMapping)
     {
+        Console.WriteLine(Cyan("Exporting clients...."));
         var page = 0;
         var count = 0;
         while (true)
@@ -308,6 +314,7 @@ public static class Program
 
     private static async Task<int> ExportOrganizations(ManagementApiClient managementSourceClient, ManagementApiClient managementTargetClient, Dictionary<string, string> orgIdMapping)
     {
+        Console.WriteLine(Cyan("Exporting organizations...."));
         var page = 0;
         var count = 0;
         while (true)
@@ -316,9 +323,19 @@ public static class Program
             foreach (var organization in organizations)
             {
                 var createOrgRequest = organization.Adapt<OrganizationCreateRequest>();
-                var response = await managementTargetClient.Organizations.CreateAsync(createOrgRequest);
-                orgIdMapping[organization.Id] = response.Id;
-                count++;
+                try
+                {
+                    var response = await managementTargetClient.Organizations.CreateAsync(createOrgRequest);
+                    orgIdMapping[organization.Id] = response.Id;
+                    count++;
+                }
+                catch (ErrorApiException e)
+                {
+                    Console.WriteLine(Red($"{e.ApiError.Message} [{organization.Name}]"));
+                    var existingOrg = await managementTargetClient.Organizations.GetByNameAsync(organization.Name);
+                    orgIdMapping[organization.Id] = existingOrg.Id;
+                }
+                
             }
             if (organizations.Paging.Length < organizations.Paging.Limit)
                 break;
