@@ -122,11 +122,17 @@ public static class Program
             var orgIdMapping = new Dictionary<string, string>();
 
             var orgCount = await ExportOrganizations(managementSourceClient, managementTargetClient, orgIdMapping);
+            await Task.Delay(1000);
             var clientCount = await ExportClients(managementSourceClient, managementTargetClient, orgIdMapping);
+            await Task.Delay(1000);
             var apiCount = await ExportAPIs(managementSourceClient, managementTargetClient);
+            await Task.Delay(1000);
             var roleCount = await ExportRoles(managementSourceClient, managementTargetClient);
+            await Task.Delay(1000);
             var ruleCount = await ExportRules(managementSourceClient, managementTargetClient);
+            await Task.Delay(1000);
             var actionCount = await ExportActions(managementSourceClient, managementTargetClient);
+            await Task.Delay(1000);
             var flowCount = await ExportFlows(managementSourceClient, managementTargetClient);
 
              Console.WriteLine($"{orgCount} orgs exported");
