@@ -199,6 +199,7 @@ public static class Program
             {
                 var createActionRequest = action.Adapt<CreateActionRequest>();
                 var newAction = await managementTargetClient.Actions.CreateAsync(createActionRequest);
+                await Task.Delay(5000);
                 await managementTargetClient.Actions.DeployAsync(newAction.Id);
                 count++;
             }
@@ -302,6 +303,10 @@ public static class Program
             var clients = await managementSourceClient.Clients.GetAllAsync(new GetClientsRequest(), new PaginationInfo(page, 100, true));
             foreach (var client in clients)
             {
+                if (client.Name == "Default App")
+                {
+                    continue;
+                }
                 var createClientRequest = client.Adapt<ClientCreateRequest>();
                 if (client.ClientMetaData?.org_id != null)
                 {
