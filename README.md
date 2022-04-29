@@ -10,3 +10,4 @@ Current Commands Supported
  * list-users
  * list-clients
  * list-client-application-types
+ * export-tenant
